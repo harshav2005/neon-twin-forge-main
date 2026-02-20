@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongo:27017/neon
+      - JWT_SECRET=dev_secret
+      - NODE_ENV=development
+    depends_on:
+      - mongo
+    networks:
+      - neon-network
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - neon-network
+
+networks:
+  neon-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
