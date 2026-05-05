@@ -138,10 +138,22 @@ The advent of Transformer-based models (GPT-3, Gemini, Llama) has enabled machin
 *   **NFR-04 Reliability**: The AI Service must have a fallback mechanism (e.g., error message) if the API provider is down.
 
 ### 3.3 Software & Hardware Requirements
-*   **Server Side**: Node.js v18+, Express.js, MongoDB Atlas.
-*   **Client Side**: Modern Web Browser (Chrome/Edge/Firefox), React v18.
-*   **Development Tools**: VS Code, Postman, Git.
-*   **RAM**: Minimum 4GB (8GB Recommended for development).
+
+#### 3.3.1 Software Requirements
+*   **Operating System:** Windows 10/11, macOS, or Linux.
+*   **Backend Environment:** Node.js (v18.0.0 or higher).
+*   **Web Framework:** Express.js (v5.x).
+*   **Frontend Library:** React (v18.x) with Vite build tool.
+*   **Database:** MongoDB Atlas (Cloud) or MongoDB Community Server local.
+*   **AI Integration:** Google Gemini Pro API (via `@google/generative-ai`) or OpenAI API.
+*   **Security:** JSON Web Token (JWT) for session management and Bcrypt for password encryption.
+*   **Development Tools:** VS Code, Git, Postman (API Testing), and modern browsers (Chrome, Firefox, or Edge).
+
+#### 3.3.2 Hardware Requirements
+*   **Processor:** Dual-core 2.0 GHz or faster (Minimum); Quad-core or higher (Recommended).
+*   **Memory (RAM):** 4 GB (Minimum); 8 GB or 16 GB (Recommended for smooth development and hosting).
+*   **Storage:** 500 MB of free disk space for project source code and dependencies.
+*   **Internet:** High-speed internet connection required for real-time AI API communication and cloud database access.
 
 ---
 

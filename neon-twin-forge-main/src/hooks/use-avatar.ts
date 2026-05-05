@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 const AVATAR_KEY = "user_avatar_url";
 
 export function useAvatar() {
-  const [avatarUrl, setAvatarUrl] = useState(() => localStorage.getItem(AVATAR_KEY) || "/person.png");
+  const [avatarUrl, setAvatarUrl] = useState(() => localStorage.getItem(AVATAR_KEY) || null);
 
   // Function to handle image file and convert it to a Data URL
   const updateAvatar = (file) => {
@@ -22,12 +22,12 @@ export function useAvatar() {
 
   const removeAvatar = () => {
     localStorage.removeItem(AVATAR_KEY);
-    setAvatarUrl("/person.png");
+    setAvatarUrl(null);
   };
 
   // Ensure the latest stored value is used if the component remounts
   useEffect(() => {
-    setAvatarUrl(localStorage.getItem(AVATAR_KEY) || "/person.png");
+    setAvatarUrl(localStorage.getItem(AVATAR_KEY) || null);
   }, []);
 
   return { avatarUrl, updateAvatar, removeAvatar };

@@ -5,11 +5,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getAvatarUrl(url: string | undefined | null) {
-  if (!url) return "/person.png"; // Default fallback
+export function getAvatarUrl(url: string | undefined | null): string | null {
+  if (!url) return null;
+  // These are placeholder paths that don't exist as real files — let the component handle fallback
+  if (url === "/person.png" || url === "/default-avatar.png") return null;
   if (url.startsWith("http")) return url; // Already absolute (e.g. Cloudinary)
-  if (url.startsWith("/default-avatar")) return url; // Default static asset
-  if (url === "/person.png") return url; // Default static asset
+  if (url.startsWith("/default-avatar")) return null; // Default static asset placeholder
 
   // Normalization for Windows paths and legacy absolute paths
   let cleanUrl = url.replace(/\\/g, '/');

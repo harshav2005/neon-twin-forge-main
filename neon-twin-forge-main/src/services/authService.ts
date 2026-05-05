@@ -33,6 +33,8 @@ const authService = {
         }
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        // Clear frontend memory/chat cache
+        sessionStorage.clear();
     }
 };
 

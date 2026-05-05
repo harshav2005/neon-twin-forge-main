@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const Twin = require('../models/Twin');
+const TwinProfile = require('../models/TwinProfile');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { generateToken, generateRefreshToken } = require('../utils/generateToken');
@@ -28,7 +28,7 @@ const registerUser = async (req, res) => {
 
         if (user) {
             // Create default twin
-            await Twin.create({ user: user._id });
+            await TwinProfile.create({ user: user._id });
 
             res.status(201).json({
                 _id: user._id,

@@ -5,8 +5,9 @@ const Metrics = require('../models/Metrics');
 // @access  Private
 const addMetrics = async (req, res) => {
     try {
+        const userId = req.user?.id || req.body.userId || req.query.userId;
         const data = await Metrics.create({
-            user: req.user._id,
+            user: String(userId),
             ...req.body
         });
         res.status(201).json({ message: "Metrics saved successfully.", data });
@@ -20,7 +21,8 @@ const addMetrics = async (req, res) => {
 // @access  Private
 const getLatestMetrics = async (req, res) => {
     try {
-        const latest = await Metrics.findOne({ user: req.user._id }).sort({ createdAt: -1 });
+        const userId = req.user?.id || req.body.userId || req.query.userId;
+        const latest = await Metrics.findOne({ user: String(userId) }).sort({ createdAt: -1 });
         res.json(latest || {});
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch latest metrics." });
@@ -34,9 +36,10 @@ const getMonthlyMetrics = async (req, res) => {
     try {
         const monthAgo = new Date();
         monthAgo.setDate(monthAgo.getDate() - 30);
+        const userId = req.user?.id || req.body.userId || req.query.userId;
 
         const records = await Metrics.find({
-            user: req.user._id,
+            user: String(userId),
             createdAt: { $gte: monthAgo }
         }).sort({ createdAt: 1 });
 

@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   Send,
   Mic,
@@ -63,25 +65,17 @@ export default function Chat() {
     scrollToBottom();
   }, [messages]);
 
-  // Auth Check & History Fetch
+  // Fetch History on mount
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    // Fetch History
     const fetchHistory = async () => {
       try {
-        const history = await twinService.getHistory();
+        const history = await twinService.getHistory("");
         if (history && history.length > 0) {
-          // Map backend messages to frontend format
           const formattedMessages: Message[] = history.map((msg: any) => ({
-            id: msg._id,
+            id: msg._id || Date.now(),
             text: msg.text,
-            sender: msg.sender, // 'user' | 'twin' - matches interface
-            timestamp: new Date(msg.timestamp),
+            sender: msg.sender,
+            timestamp: new Date(msg.timestamp || msg.createdAt),
             emotion: msg.emotion
           }));
           setMessages(formattedMessages);
@@ -92,7 +86,7 @@ export default function Chat() {
     };
 
     fetchHistory();
-  }, [navigate]);
+  }, []);
 
   const { isListening, transcript, startListening, stopListening, resetTranscript, hasRecognitionSupport } = useSpeechRecognition();
 
@@ -104,7 +98,7 @@ export default function Chat() {
   }, [transcript]);
 
   const handleSend = async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isTyping) return;
 
     const userMessage: Message = {
       id: Date.now(),
@@ -113,20 +107,23 @@ export default function Chat() {
       timestamp: new Date(),
     };
 
+    console.log("Sending chat message:", inputValue);
+
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
-    resetTranscript(); // Clear voice buffer
+    resetTranscript();
     setIsTyping(true);
 
     try {
-      const data = await twinService.chat(userMessage.text);
+      const data = await twinService.chat(userMessage.text, "");
+      console.log("Chat response:", data);
 
       const twinMessage: Message = {
         id: Date.now() + 1,
         text: data.response,
         sender: "twin",
         timestamp: new Date(),
-        emotion: data.emotion || "thoughtful", // Use backend emotion if available
+        emotion: data.emotion || "thoughtful",
       };
 
       setMessages((prev) => [...prev, twinMessage]);
@@ -281,12 +278,38 @@ export default function Chat() {
                         <span className="capitalize">{message.emotion}</span>
                       </div>
                     )}
-                    <p className="text-sm leading-relaxed">{message.text}</p>
+                    {message.sender === "twin" ? (
+                      <div className="chat-markdown text-sm leading-relaxed">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            code({ node, inline, className, children, ...props }: any) {
+                              return inline ? (
+                                <code className="bg-black/30 px-1 py-0.5 rounded text-xs font-mono" {...props}>{children}</code>
+                              ) : (
+                                <pre className="bg-[#0f172a] text-[#e5e7eb] p-4 rounded-xl overflow-x-auto my-3 text-xs font-mono whitespace-pre-wrap border border-white/10">
+                                  <code {...props}>{children}</code>
+                                </pre>
+                              );
+                            },
+                            p({ children }: any) { return <p className="mb-2 last:mb-0">{children}</p>; },
+                            ul({ children }: any) { return <ul className="list-disc pl-5 my-2 space-y-1">{children}</ul>; },
+                            ol({ children }: any) { return <ol className="list-decimal pl-5 my-2 space-y-1">{children}</ol>; },
+                            li({ children }: any) { return <li className="text-sm">{children}</li>; },
+                            strong({ children }: any) { return <strong className="font-bold text-foreground">{children}</strong>; },
+                            h1({ children }: any) { return <h1 className="text-base font-bold mb-1 mt-2">{children}</h1>; },
+                            h2({ children }: any) { return <h2 className="text-sm font-bold mb-1 mt-2">{children}</h2>; },
+                            h3({ children }: any) { return <h3 className="text-sm font-semibold mb-1 mt-1">{children}</h3>; },
+                          }}
+                        >
+                          {message.text}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-sm leading-relaxed">{message.text}</p>
+                    )}
                     <p className="text-xs text-muted-foreground mt-2">
-                      {message.timestamp.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </p>
                   </div>
                 </div>
@@ -332,6 +355,7 @@ export default function Chat() {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
+                  disabled={isTyping}
                   className={cn(
                     "w-full px-4 py-3 rounded-xl bg-input/50 border border-border/50 focus:outline-none focus:border-primary transition-colors",
                     isListening && "border-primary ring-2 ring-primary/20"
@@ -366,7 +390,7 @@ export default function Chat() {
                 variant="neon"
                 size="icon"
                 onClick={handleSend}
-                disabled={!inputValue.trim()}
+                disabled={!inputValue.trim() || isTyping}
                 className="rounded-xl"
               >
                 <Send className="w-5 h-5" />

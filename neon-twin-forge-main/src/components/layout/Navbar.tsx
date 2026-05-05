@@ -7,7 +7,9 @@ import { Menu, X, Sun, Moon, Sparkles } from "lucide-react";
 import { AnimeButton } from "@/components/ui/anime-button";
 import { useTheme } from "@/hooks/useTheme";
 import { cn, getAvatarUrl } from "@/lib/utils";
+import { ProfileAvatar } from "@/components/ui/ProfileAvatar";
 import { NavGate } from "@/components/ui/NavGate";
+import { ContactTeamModal } from "@/components/ContactTeamModal";
 import authService from "@/services/authService";
 
 // Define the shape of the user object stored in localStorage
@@ -26,9 +28,9 @@ const navLinks = [
     { href: "/", label: "Home" }, // Public/Open
     { href: "/dashboard", label: "Dashboard" }, // PROTECTED
     { href: "/twin-builder", label: "Twin Builder" }, // PROTECTED
-    { href: "/chat", label: "Chat" }, // PROTECTED
-    { href: "/simulation", label: "Simulation" }, // PROTECTED
-    { href: "/analytics", label: "Analytics" }, // PROTECTED
+    { href: "/chat", label: "Chat" },
+    { href: "/memory", label: "Memory" },
+    { href: "/analytics", label: "Analytics" },
 ];
 
 export function Navbar() {
@@ -145,22 +147,25 @@ export function Navbar() {
                                 {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                             </AnimeButton>
 
+                            {/* Contact Us Team Modal */}
+                            <ContactTeamModal />
+
                             {user ? (
                                 // Profile dropdown (visible when logged in)
                                 <div className="relative group">
                                     <AnimeButton variant="ghost" size="icon" className="rounded-full">
-                                        <img
+                                        <ProfileAvatar
                                             src={getAvatarUrl(user.avatarUrl)}
-                                            alt="Profile avatar"
-                                            className="w-8 h-8 rounded-full object-cover"
+                                            name={user.name}
+                                            size="sm"
                                         />
                                     </AnimeButton>
                                     <div className="absolute right-0 mt-2 w-36 bg-card rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
                                         <Link
-                                            to="/dashboard" // Use standard Link since user is logged in
-                                            className="block px-4 py-2 text-sm hover:bg-muted/50 rounded-t-xl"
+                                            to="/memory"
+                                            className="block px-4 py-2 text-sm hover:bg-muted/50"
                                         >
-                                            Dashboard
+                                            Memory Manager
                                         </Link>
                                         <button
                                             onClick={handleSignOut}

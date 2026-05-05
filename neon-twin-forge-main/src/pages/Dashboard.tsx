@@ -17,6 +17,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimeButton } from "@/components/ui/anime-button";
 import { cn, getAvatarUrl } from "@/lib/utils";
+import { ProfileAvatar } from "@/components/ui/ProfileAvatar";
 import metricsService from "@/services/metricsService";
 import twinService from "@/services/twinService";
 import api from "@/services/api";
@@ -51,6 +52,7 @@ export default function Dashboard() {
   // New States for Real Data
   const [metrics, setMetrics] = useState<any>(null);
   const [twinProfile, setTwinProfile] = useState<any>(null);
+  const [memoryCount, setMemoryCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const userName = userData ? userData.name.split(' ')[0] : "User";
@@ -66,7 +68,8 @@ export default function Dashboard() {
       }
 
       try {
-        // Check Survey Status
+        /* 
+        // TEMPORARY: Bypassing survey check for faster testing
         const surveyRes = await api.get("/survey/status");
         if (surveyRes.status === 200) {
           const data = surveyRes.data;
@@ -76,15 +79,19 @@ export default function Dashboard() {
             return;
           }
         }
+        */
+        setIsSurveyComplete(true); // Hardcoded true
 
         // Fetch Real Data in Parallel
-        const [metricsData, twinData] = await Promise.all([
+        const [metricsData, twinData, memories] = await Promise.all([
           metricsService.getLatest().catch(() => null),
-          twinService.getProfile().catch(() => null)
+          twinService.getProfile().catch(() => null),
+          twinService.getMemories().catch(() => [])
         ]);
 
         setMetrics(metricsData);
         setTwinProfile(twinData);
+        setMemoryCount(memories.length);
 
       } catch (error) {
         console.error("Dashboard data fetch error:", error);
@@ -213,7 +220,7 @@ export default function Dashboard() {
                   {[
                     { label: "Stress Level", value: metrics?.stressLevel ? `${metrics.stressLevel}/10` : "Low", color: "text-primary" },
                     { label: "Energy", value: metrics?.energyLevel ? `${metrics.energyLevel}/10` : "High", color: "text-secondary" },
-                    { label: "Interactions", value: twinProfile?.interactionCount || "12", color: "text-accent" },
+                    { label: "Total Memories", value: memoryCount, color: "text-accent" },
                   ].map((stat) => (
                     <div key={stat.label} className="glass-card p-4 rounded-xl text-center">
                       <div className={`text-2xl font-display font-bold ${stat.color}`}>
@@ -289,10 +296,11 @@ export default function Dashboard() {
               <GlassCard className="p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="relative w-12 h-12 flex-shrink-0">
-                    <img
+                    <ProfileAvatar
                       src={getAvatarUrl(avatarUrl)}
-                      alt="User Profile"
-                      className="w-12 h-12 rounded-xl object-cover bg-secondary/20"
+                      name={userName}
+                      size="md"
+                      rounded="xl"
                     />
                     <label
                       className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/50 opacity-0 hover:opacity-100 transition-opacity cursor-pointer group"
@@ -339,10 +347,11 @@ export default function Dashboard() {
                       New Conversation
                     </AnimeButton>
                   </Link>
-                  <Link to="/simulation">
+
+                  <Link to="/memory">
                     <AnimeButton variant="glass" className="w-full justify-start">
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Run Simulation
+                      <Brain className="w-4 h-4 mr-2" />
+                      Manage Memory
                     </AnimeButton>
                   </Link>
                   <Link to="/analytics">

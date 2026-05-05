@@ -15,10 +15,10 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import TwinBuilder from "./pages/TwinBuilder";
 import Chat from "./pages/Chat";
-import Simulation from "./pages/Simulation";
 import Analytics from "./pages/Analytics";
 import Admin from "./pages/Admin";
-import SurveyPage from "./pages/SurveyPage"; // <-- New mandatory page
+import SurveyPage from "./pages/SurveyPage";
+import Memory from "./pages/Memory";
 import NotFound from "./pages/NotFound";
 
 // Assume the isUserLoggedIn utility exists in lib/auth-check.js
@@ -63,8 +63,8 @@ const App = () => (
             {/* General App Routes (Require Login) */}
             <Route path="/twin-builder" element={<ProtectedRoute element={<TwinBuilder />} />} />
             <Route path="/chat" element={<ProtectedRoute element={<Chat />} />} />
-            <Route path="/simulation" element={<ProtectedRoute element={<Simulation />} />} />
             <Route path="/analytics" element={<ProtectedRoute element={<Analytics />} />} />
+            <Route path="/memory" element={<ProtectedRoute element={<Memory />} />} />
             <Route path="/admin" element={<ProtectedRoute element={<Admin />} />} />
 
             {/* -------------------- Fallback Route -------------------- */}

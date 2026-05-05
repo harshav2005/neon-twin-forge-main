@@ -31,13 +31,7 @@ const features = [
     color: "text-accent",
     glow: "purple" as const,
   },
-  {
-    icon: Sparkles,
-    title: "Decision Simulation",
-    description: "Run scenarios and see how your twin would respond. Perfect for exploring different approaches to challenges.",
-    color: "text-primary",
-    glow: "cyan" as const,
-  },
+
   {
     icon: Shield,
     title: "Privacy First",

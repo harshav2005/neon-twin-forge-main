@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const Twin = require('../models/Twin');
+const TwinProfile = require('../models/TwinProfile');
 const { getGlobalStats } = require('../services/analyticsService');
 
 // @desc    Get All Users
@@ -19,7 +19,7 @@ const getAllUsers = async (req, res) => {
 // @access  Private/Admin
 const getAllTwins = async (req, res) => {
     try {
-        const twins = await Twin.find().populate('user', 'name email').sort({ createdAt: -1 });
+        const twins = await TwinProfile.find().populate('user', 'name email').sort({ createdAt: -1 });
         // Transform for table display if needed, but returning raw objects allows frontend flexibility
         const formattedTwins = twins.map(twin => ({
             _id: twin._id,

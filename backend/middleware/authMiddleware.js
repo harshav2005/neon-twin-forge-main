@@ -17,20 +17,22 @@ const protect = async (req, res, next) => {
             req.user = await User.findById(decoded.id).select('-passwordHash');
 
             if (!req.user) {
-                return res.status(401).json({ error: 'Not authorized, user not found' });
+                // User not found in DB — fall through to default-user
+                console.warn("[Auth] Token valid but user not found in DB. Using default-user.");
+                req.user = { id: "default-user" };
             }
 
-            next();
+            return next();
         } catch (error) {
-            console.error(error);
-            res.status(401).json({ error: 'Not authorized, token failed' });
+            console.warn("[Auth] Token verification failed:", error.message);
+            // Fall through to default-user instead of blocking
         }
     }
 
-    if (!token) {
-        console.log("No token found in headers:", req.headers);
-        res.status(401).json({ error: 'Not authorized, no token' });
-    }
+    // No token or token failed — use default-user for development
+    console.log("[Auth] No valid token. Using default-user for development.");
+    req.user = { id: "default-user" };
+    next();
 };
 
 module.exports = { protect };

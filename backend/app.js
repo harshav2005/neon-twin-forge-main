@@ -13,6 +13,10 @@ const metricsRoutes = require('./routes/metricsRoutes');
 const surveyRoutes = require('./routes/surveyRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const statsRoutes = require('./routes/statsRoutes');
+const chatRoutes = require('./routes/chatRoutes');
+const memoryRoutes = require('./routes/memoryRoutes');
+const voiceMemoryRoutes = require('./routes/voiceMemoryRoutes');
 
 const app = express();
 
@@ -69,6 +73,10 @@ app.use('/api/metrics', metricsRoutes);
 app.use('/api/survey', surveyRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/stats', statsRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/memory', memoryRoutes);
+app.use('/api/voice-memory', voiceMemoryRoutes);
 
 // Health Check
 app.get('/api/health', (req, res) => {

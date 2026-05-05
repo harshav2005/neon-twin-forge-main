@@ -1,10 +1,10 @@
 const User = require('../models/User');
-const Twin = require('../models/Twin');
+const TwinProfile = require('../models/TwinProfile');
 const Metrics = require('../models/Metrics');
 
 const getGlobalStats = async () => {
     const totalUsers = await User.countDocuments();
-    const totalTwins = await Twin.countDocuments();
+    const totalTwins = await TwinProfile.countDocuments();
     const estimatedConversations = totalUsers * 50; // Simple estimation as per original
 
     // Aggregations for more detailed analytics
